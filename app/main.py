@@ -1,4 +1,4 @@
-from flask import Flask, jsonify
+from flask import Flask, jsonify, render_template
 import psycopg2
 from psycopg2.extras import RealDictCursor
 import time
@@ -15,6 +15,10 @@ app = Flask(__name__)
 app.register_blueprint(post.bp)
 app.register_blueprint(user.bp)
 app.register_blueprint(auth.bp)
+
+@app.route("/")
+def index():
+    return render_template("index.html")
 
 # Teardown context for db
 app.teardown_appcontext(close_db)

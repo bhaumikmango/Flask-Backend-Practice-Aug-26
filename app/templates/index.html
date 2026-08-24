@@ -1,0 +1,212 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>API Explorer - Flask Backend</title>
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+    <!-- CSS -->
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body>
+    <div class="glow-bg"></div>
+    <div class="container">
+        <!-- Header -->
+        <header>
+            <div class="logo-area">
+                <span class="logo-icon">⚡</span>
+                <div>
+                    <h1>API Explorer</h1>
+                    <p class="subtitle">Flask Backend Practice & Demo Platform</p>
+                </div>
+            </div>
+            <div class="auth-status-bar glass-panel">
+                <div class="status-indicator">
+                    <span class="indicator-dot" id="auth-dot"></span>
+                    <span id="auth-status-text">Checking status...</span>
+                </div>
+                <button id="logout-btn" class="btn btn-secondary btn-sm hidden">Logout</button>
+            </div>
+        </header>
+
+        <!-- Main Dashboard Layout -->
+        <main class="dashboard-grid">
+            
+            <!-- Column 1: Auth & Users -->
+            <section class="grid-col">
+                <!-- Authentication Panel -->
+                <div class="glass-panel" id="auth-panel">
+                    <div class="panel-header">
+                        <h2>🔑 Authentication</h2>
+                    </div>
+                    <div class="panel-body">
+                        <form id="login-form">
+                            <div class="form-group">
+                                <label for="login-username">Email / Username</label>
+                                <input type="text" id="login-username" placeholder="name@example.com" required autocomplete="username">
+                            </div>
+                            <div class="form-group">
+                                <label for="login-password">Password</label>
+                                <input type="password" id="login-password" placeholder="••••••••" required autocomplete="current-password">
+                            </div>
+                            <button type="submit" class="btn btn-primary btn-block">Authenticate & Save Token</button>
+                        </form>
+                    </div>
+                </div>
+
+                <!-- Users Panel -->
+                <div class="glass-panel">
+                    <div class="panel-header">
+                        <h2>👤 User Management</h2>
+                    </div>
+                    <div class="panel-body">
+                        <!-- Create User -->
+                        <details class="action-details" open>
+                            <summary class="action-summary">Create New User (POST /users/)</summary>
+                            <form id="create-user-form" class="action-form">
+                                <div class="form-group">
+                                    <label for="user-email">Email Address</label>
+                                    <input type="email" id="user-email" placeholder="newuser@example.com" required>
+                                </div>
+                                <div class="form-group">
+                                    <label for="user-password">Password</label>
+                                    <input type="password" id="user-password" placeholder="••••••••" required>
+                                </div>
+                                <button type="submit" class="btn btn-accent btn-sm">Register User</button>
+                            </form>
+                        </details>
+
+                        <!-- Get All Users -->
+                        <div class="action-row">
+                            <span>List All Users (GET /users/)</span>
+                            <button id="list-users-btn" class="btn btn-secondary btn-sm">Fetch List</button>
+                        </div>
+
+                        <!-- User ID Operations -->
+                        <details class="action-details">
+                            <summary class="action-summary">User Actions by ID</summary>
+                            <div class="action-form">
+                                <div class="form-group">
+                                    <label for="target-user-id">Target User ID</label>
+                                    <input type="number" id="target-user-id" placeholder="e.g. 1">
+                                </div>
+                                <div class="btn-group">
+                                    <button id="get-user-btn" class="btn btn-secondary btn-sm">Get User</button>
+                                    <button id="delete-user-btn" class="btn btn-danger btn-sm">Delete User</button>
+                                </div>
+                                
+                                <div class="divider">Update User Details (PUT /users/id)</div>
+                                <form id="update-user-form">
+                                    <div class="form-group">
+                                        <label for="update-user-email">New Email Address</label>
+                                        <input type="email" id="update-user-email" placeholder="updated@example.com" required>
+                                    </div>
+                                    <div class="form-group">
+                                        <label for="update-user-password">New Password</label>
+                                        <input type="password" id="update-user-password" placeholder="••••••••" required>
+                                    </div>
+                                    <button type="submit" class="btn btn-accent btn-sm btn-block">Update User</button>
+                                </form>
+                            </div>
+                        </details>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Column 2: Posts -->
+            <section class="grid-col">
+                <div class="glass-panel">
+                    <div class="panel-header">
+                        <h2>📝 Post Management <span class="badge badge-warning">Requires Auth</span></h2>
+                    </div>
+                    <div class="panel-body">
+                        <!-- Create Post -->
+                        <details class="action-details" open>
+                            <summary class="action-summary">Create Post (POST /posts/)</summary>
+                            <form id="create-post-form" class="action-form">
+                                <div class="form-group">
+                                    <label for="post-title">Title</label>
+                                    <input type="text" id="post-title" placeholder="My Awesome Post" required>
+                                </div>
+                                <div class="form-group">
+                                    <label for="post-content">Content</label>
+                                    <textarea id="post-content" rows="3" placeholder="Write something inspiring..." required></textarea>
+                                </div>
+                                <div class="form-group-checkbox">
+                                    <input type="checkbox" id="post-published" checked>
+                                    <label for="post-published">Publish Immediately</label>
+                                </div>
+                                <button type="submit" class="btn btn-primary btn-sm">Publish Post</button>
+                            </form>
+                        </details>
+
+                        <!-- Read Operations -->
+                        <div class="action-row btn-group">
+                            <button id="list-posts-btn" class="btn btn-secondary btn-sm">List All (GET /posts/)</button>
+                            <button id="latest-post-btn" class="btn btn-secondary btn-sm">Get Latest (GET /posts/latest)</button>
+                        </div>
+
+                        <!-- Post ID Operations -->
+                        <details class="action-details">
+                            <summary class="action-summary">Post Actions by ID</summary>
+                            <div class="action-form">
+                                <div class="form-group">
+                                    <label for="target-post-id">Target Post ID</label>
+                                    <input type="number" id="target-post-id" placeholder="e.g. 5">
+                                </div>
+                                <div class="btn-group">
+                                    <button id="get-post-btn" class="btn btn-secondary btn-sm">Get Post</button>
+                                    <button id="delete-post-btn" class="btn btn-danger btn-sm">Delete Post</button>
+                                </div>
+
+                                <div class="divider">Update Post (PUT /posts/id)</div>
+                                <form id="update-post-form">
+                                    <div class="form-group">
+                                        <label for="update-post-title">New Title</label>
+                                        <input type="text" id="update-post-title" placeholder="New Title" required>
+                                    </div>
+                                    <div class="form-group">
+                                        <label for="update-post-content">New Content</label>
+                                        <textarea id="update-post-content" rows="2" placeholder="New Content..." required></textarea>
+                                    </div>
+                                    <div class="form-group-checkbox">
+                                        <input type="checkbox" id="update-post-published" checked>
+                                        <label for="update-post-published">Published</label>
+                                    </div>
+                                    <button type="submit" class="btn btn-accent btn-sm btn-block">Update Post</button>
+                                </form>
+                            </div>
+                        </details>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Column 3: Live Output Console -->
+            <section class="grid-col console-col">
+                <div class="glass-panel console-panel">
+                    <div class="panel-header console-header">
+                        <h2>🖥️ Response Console</h2>
+                        <button id="clear-console-btn" class="btn btn-sm btn-secondary">Clear</button>
+                    </div>
+                    <div class="console-body">
+                        <div class="console-meta">
+                            <span>Status: <strong id="response-status">-</strong></span>
+                            <span>Time: <span id="response-time">-</span></span>
+                        </div>
+                        <pre id="console-output" class="language-json"><code>{
+  "message": "Send a request using any action panel to inspect responses here."
+}</code></pre>
+                    </div>
+                </div>
+            </section>
+
+        </main>
+    </div>
+
+    <!-- JS -->
+    <script src="{{ url_for('static', filename='main.js') }}"></script>
+</body>
+</html>
